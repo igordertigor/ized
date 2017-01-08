@@ -74,4 +74,4 @@ def mapreduce_qr(X_chunks, n=None, map_func=map, reduce_func=reduce):
 def lm_solve_qr(data_iter, map_func=map, reduce_func=reduce):
     R = mapreduce_qr(data_iter, map_func=map_func, reduce_func=reduce_func)
     w = np.linalg.solve(R[:-1, :-1], R[:-1, -1])
-    return w, R[-1, -1]**2
+    return w, R[-1, -1]**2, R
