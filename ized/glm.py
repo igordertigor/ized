@@ -1,9 +1,13 @@
 #!/usr/bin/env python
 
 from functools import reduce
+from collections import namedtuple
 import numpy as np
 
 from . import qr, utils
+
+LinkFamily = namedtuple('LinkFamily',
+                        ['y', 'mu', 'dmudeta', 'detadmu', 'vary'])
 
 
 def estimate_glm(data, link_family, penalty=None, **more_kw_args):
@@ -73,7 +77,7 @@ def normal_identity_family(eta, y):
     Returns:
         mu, dmu/deta, deta/dmu, var(Y)
     """
-    return y, eta, 1., 1., 1.
+    return LinkFamily(y, eta, 1., 1., 1.)
 
 
 def binomial_logistic_family(eta, y):
@@ -104,7 +108,7 @@ def binomial_logistic_family(eta, y):
     dmudeta = mu*(1-mu)
     vary = n * dmudeta
     detadmu = 1./np.clip(dmudeta, 1e-7, np.inf)  # Clip to avoid nan
-    return y, mu, dmudeta, detadmu, vary
+    return LinkFamily(y, mu, dmudeta, detadmu, vary)
 
 
 def poisson_log_family(eta, y):
@@ -119,7 +123,23 @@ def poisson_log_family(eta, y):
     """
     mu = np.exp(eta)
     detadmu = 1./mu
-    return y, mu, mu, detadmu, mu
+    return LinkFamily(y, mu, mu, detadmu, mu)
+
+
+def poisson_softrelu_family(eta, y):
+    """GLM family variables for Poisson regression with a soft relu nonlinear
+
+    Args:
+        eta (array): the product Xb of a generalized linear model
+        y (array): the target variable counts
+
+    Returns:
+        mu, dmu/deta, deta/dmu, var(Y)
+    """
+    mu = np.log1p(np.exp(eta))
+    dmudeta = 1./(1+np.exp(-eta))
+    detadmu = 1./(1-np.exp(-mu))
+    return LinkFamily(y, mu, dmudeta, detadmu, mu)
 
 
 def weight_iterable(family, beta, iterable):
