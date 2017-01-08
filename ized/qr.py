@@ -39,7 +39,7 @@ def qr_reduce(X, Y, n=None):
     Returns:
         Z or R, such that QR=Z for an orthogonal matrix Q
     """
-    return qr_mapped(np.concatenate((X, Y), 0))
+    return qr_mapped(np.concatenate((X, Y), 0), n=n)
 
 
 def mapreduce_qr(X_chunks, n=None, map_func=map, reduce_func=reduce):
@@ -71,12 +71,7 @@ def mapreduce_qr(X_chunks, n=None, map_func=map, reduce_func=reduce):
                        map_func(qr_mapped, X_chunks))
 
 
-def mapreduce_svd(X_chunks, n=None, map_func=map, reduce_func=reduce):
-    R = np.concatenate(map_func(qr_mapped, X_chunks), 0)
-    return np.linalg.svd(R)
-
-
-def lm_solve_qr(data_iter, map_func, reduce_func):
+def lm_solve_qr(data_iter, map_func=map, reduce_func=reduce):
     R = mapreduce_qr(data_iter, map_func=map_func, reduce_func=reduce_func)
     w = np.linalg.solve(R[:-1, :-1], R[:-1, -1])
     return w, R[-1, -1]**2
