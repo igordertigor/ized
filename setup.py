@@ -8,7 +8,7 @@ long_description = '''
 
 setup(
     name='ized',
-    version='0.0.1',
+    version='0.0.2',
     author='Ingo Fruend',
     author_email='ized@ingofruend.net',
     description='Spline expansions, multiple regularizers, '
