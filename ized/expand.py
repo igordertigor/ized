@@ -33,8 +33,10 @@ def bs_expand(x, knots, degree, map_func=map):
         [knots[0]]*(degree+1),
         knots[1:-1],
         [knots[-1]]*(degree+1)))
-    return np.array(map_func(
-        functools.partial(bspline, x, knots_, degree=degree), range(K))).T
+    return np.array(list(map_func(
+        functools.partial(bspline, x, knots_, degree=degree),
+        range(K)
+    ))).T
 
 
 def bs_penalty(knots, degree):
