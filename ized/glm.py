@@ -4,7 +4,7 @@ from functools import reduce
 from collections import namedtuple
 import numpy as np
 
-from . import qr, utils
+from . import qr, utils, gcv
 
 LinkFamily = namedtuple('LinkFamily',
                         ['y', 'mu', 'dmudeta', 'detadmu', 'vary'])
@@ -52,7 +52,7 @@ def estimate_glm(data, link_family, penalty=None, **more_kw_args):
 
     # IRLS
     for i in range(niter):
-        w_, r2, R = qr.lm_solve_qr(
+        w_, r2, QR = qr.lm_solve_qr(
             weight_iterable(link_family, w, data_iter()),
             map_func=map_func,
             reduce_func=reduce_func)
