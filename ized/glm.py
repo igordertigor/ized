@@ -45,10 +45,10 @@ def estimate_glm(data, link_family, penalty=None, **more_kw_args):
             return reduce(f, seq, new_penalty)
 
     # Initialize with linear model
-    R = qr.mapreduce_qr(data_iter(),
-                        map_func=map_func,
-                        reduce_func=reduce_func)
-    w = np.linalg.solve(R[:-1, :-1], R[:-1, -1])
+    QR = qr.mapreduce_qr(data_iter(),
+                         map_func=map_func,
+                         reduce_func=reduce_func)
+    w = np.linalg.solve(QR[:-1, :-1], QR[:-1, -1])
 
     # IRLS
     for i in range(niter):
@@ -64,7 +64,7 @@ def estimate_glm(data, link_family, penalty=None, **more_kw_args):
     else:
         converged = False
 
-    return w, r2, converged, (R[:-1, :-1], R[:-1, -1])
+    return w, r2, converged, (QR[:-1, :-1], QR[:-1, -1])
 
 
 def normal_identity_family(eta, y):
