@@ -101,7 +101,7 @@ def binomial_logistic_family(eta, y):
         y, n = y
     elif isinstance(y, np.ndarray):
         n = 1.
-        assert np.sum((np.sort(np.unique(y)) - [0, 1])**2) < 1e-7
+        assert set(y.astype('i').tolist()) == {0, 1}
     else:
         raise ValueError('unknown target format')
     mu = 1./(1+np.exp(-eta))
